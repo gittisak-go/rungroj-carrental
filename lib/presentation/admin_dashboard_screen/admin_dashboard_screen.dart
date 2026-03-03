@@ -162,6 +162,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.pink),
+          onPressed: () => Navigator.pushNamedAndRemoveUntil(
+            context,
+            '/ride-request-screen',
+            (route) => false,
+          ),
+        ),
         title: Row(
           children: [
             Text(

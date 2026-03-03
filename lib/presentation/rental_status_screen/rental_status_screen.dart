@@ -111,6 +111,14 @@ class _RentalStatusScreenState extends State<RentalStatusScreen> {
       appBar: AppBar(
         title: const Text('สถานะการเช่า'),
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios),
+          onPressed: () => Navigator.pushNamedAndRemoveUntil(
+            context,
+            '/ride-request-screen',
+            (route) => false,
+          ),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),

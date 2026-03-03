@@ -72,14 +72,14 @@ class _FleetInventoryScreenState extends State<FleetInventoryScreen> {
       if (_searchQuery.isNotEmpty) {
         filtered = filtered.where((vehicle) {
           return vehicle.brand.toLowerCase().contains(
-                _searchQuery.toLowerCase(),
-              ) ||
+                    _searchQuery.toLowerCase(),
+                  ) ||
               vehicle.model.toLowerCase().contains(
-                _searchQuery.toLowerCase(),
-              ) ||
+                    _searchQuery.toLowerCase(),
+                  ) ||
               vehicle.licenseplate.toLowerCase().contains(
-                _searchQuery.toLowerCase(),
-              );
+                    _searchQuery.toLowerCase(),
+                  );
         }).toList();
       }
 
@@ -161,29 +161,28 @@ class _FleetInventoryScreenState extends State<FleetInventoryScreen> {
           selectedSeats: _selectedSeats,
           availabilityStartDate: _availabilityStartDate,
           availabilityEndDate: _availabilityEndDate,
-          onApplyFilter:
-              ({
-                required String status,
-                double? minPrice,
-                double? maxPrice,
-                List<String>? transmissions,
-                List<String>? fuelTypes,
-                int? seats,
-                DateTime? startDate,
-                DateTime? endDate,
-              }) {
-                setState(() {
-                  _selectedStatus = status;
-                  _minPrice = minPrice;
-                  _maxPrice = maxPrice;
-                  _selectedTransmissions = transmissions ?? [];
-                  _selectedFuelTypes = fuelTypes ?? [];
-                  _selectedSeats = seats;
-                  _availabilityStartDate = startDate;
-                  _availabilityEndDate = endDate;
-                });
-                _filterVehicles();
-              },
+          onApplyFilter: ({
+            required String status,
+            double? minPrice,
+            double? maxPrice,
+            List<String>? transmissions,
+            List<String>? fuelTypes,
+            int? seats,
+            DateTime? startDate,
+            DateTime? endDate,
+          }) {
+            setState(() {
+              _selectedStatus = status;
+              _minPrice = minPrice;
+              _maxPrice = maxPrice;
+              _selectedTransmissions = transmissions ?? [];
+              _selectedFuelTypes = fuelTypes ?? [];
+              _selectedSeats = seats;
+              _availabilityStartDate = startDate;
+              _availabilityEndDate = endDate;
+            });
+            _filterVehicles();
+          },
         ),
       ),
     );
@@ -260,7 +259,7 @@ class _FleetInventoryScreenState extends State<FleetInventoryScreen> {
           ),
         ),
         title: Text(
-          'Fleet Inventory',
+          'คลังยานพาหนะ',
           style: TextStyle(
             color: Color(0xFF2C3E50),
             fontSize: 18.sp,
@@ -490,69 +489,70 @@ class _FleetInventoryScreenState extends State<FleetInventoryScreen> {
                     child: CircularProgressIndicator(color: Color(0xFF5B9FED)),
                   )
                 : _filteredVehicles.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.directions_car_outlined,
-                          size: 60.sp,
-                          color: Color(0xFF9BA8B8),
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.directions_car_outlined,
+                              size: 60.sp,
+                              color: Color(0xFF9BA8B8),
+                            ),
+                            SizedBox(height: 2.h),
+                            Text(
+                              'ไม่พบรถที่ตรงกับเงื่อนไข',
+                              style: TextStyle(
+                                fontSize: 16.sp,
+                                color: Color(0xFF6B7A99),
+                              ),
+                            ),
+                            SizedBox(height: 1.h),
+                            TextButton(
+                              onPressed: () {
+                                setState(() {
+                                  _selectedStatus = 'all';
+                                  _minPrice = null;
+                                  _maxPrice = null;
+                                  _selectedTransmissions = [];
+                                  _selectedFuelTypes = [];
+                                  _selectedSeats = null;
+                                  _availabilityStartDate = null;
+                                  _availabilityEndDate = null;
+                                  _searchQuery = '';
+                                  _searchController.clear();
+                                });
+                                _filterVehicles();
+                              },
+                              child: Text(
+                                'ล้างตัวกรอง',
+                                style: TextStyle(color: Color(0xFF5B9FED)),
+                              ),
+                            ),
+                          ],
                         ),
-                        SizedBox(height: 2.h),
-                        Text(
-                          'ไม่พบรถที่ตรงกับเงื่อนไข',
-                          style: TextStyle(
-                            fontSize: 16.sp,
-                            color: Color(0xFF6B7A99),
+                      )
+                    : RefreshIndicator(
+                        onRefresh: _loadFleetVehicles,
+                        color: Color(0xFF5B9FED),
+                        child: GridView.builder(
+                          padding: EdgeInsets.all(3.w),
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 4.w,
+                            mainAxisSpacing: 2.5.h,
+                            childAspectRatio: 0.68,
                           ),
-                        ),
-                        SizedBox(height: 1.h),
-                        TextButton(
-                          onPressed: () {
-                            setState(() {
-                              _selectedStatus = 'all';
-                              _minPrice = null;
-                              _maxPrice = null;
-                              _selectedTransmissions = [];
-                              _selectedFuelTypes = [];
-                              _selectedSeats = null;
-                              _availabilityStartDate = null;
-                              _availabilityEndDate = null;
-                              _searchQuery = '';
-                              _searchController.clear();
-                            });
-                            _filterVehicles();
+                          itemCount: _filteredVehicles.length,
+                          itemBuilder: (context, index) {
+                            return FleetVehicleCard(
+                              vehicle: _filteredVehicles[index],
+                              onTap: () =>
+                                  _showVehicleDetails(_filteredVehicles[index]),
+                            );
                           },
-                          child: Text(
-                            'ล้างตัวกรอง',
-                            style: TextStyle(color: Color(0xFF5B9FED)),
-                          ),
                         ),
-                      ],
-                    ),
-                  )
-                : RefreshIndicator(
-                    onRefresh: _loadFleetVehicles,
-                    color: Color(0xFF5B9FED),
-                    child: GridView.builder(
-                      padding: EdgeInsets.all(3.w),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 4.w,
-                        mainAxisSpacing: 2.5.h,
-                        childAspectRatio: 0.68,
                       ),
-                      itemCount: _filteredVehicles.length,
-                      itemBuilder: (context, index) {
-                        return FleetVehicleCard(
-                          vehicle: _filteredVehicles[index],
-                          onTap: () =>
-                              _showVehicleDetails(_filteredVehicles[index]),
-                        );
-                      },
-                    ),
-                  ),
           ),
         ],
       ),

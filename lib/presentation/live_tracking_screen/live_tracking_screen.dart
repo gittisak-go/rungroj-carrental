@@ -176,12 +176,12 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
 
   void _updateETA() {
     List<String> etas = [
-      "5 min",
-      "4 min",
-      "3 min",
-      "2 min",
-      "1 min",
-      "Arriving"
+      "5 นาที",
+      "4 นาที",
+      "3 นาที",
+      "2 นาที",
+      "1 นาที",
+      "กำลังมาถึง"
     ];
     int currentIndex = etas.indexOf(_rideData["eta"] as String);
     if (currentIndex < etas.length - 1) {
@@ -207,8 +207,8 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
   void _onDriverArrival() {
     setState(() {
       _hasDriverArrived = true;
-      _rideData["status"] = "Driver Arrived";
-      _rideData["eta"] = "Arrived";
+      _rideData["status"] = "คนขับมาถึงแล้ว";
+      _rideData["eta"] = "มาถึงแล้ว";
     });
 
     _arrivalAnimationController.forward();
@@ -229,8 +229,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
             ),
             SizedBox(width: 2.w),
             const Expanded(
-              child: Text(
-                  "Your driver has arrived! Please head to the pickup location."),
+              child: Text("คนขับของคุณมาถึงแล้ว! กรุณาไปที่จุดรับ"),
             ),
           ],
         ),
@@ -247,13 +246,13 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
         markerId: const MarkerId('current_location'),
         position: _currentLocation,
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-        infoWindow: const InfoWindow(title: 'Your Location'),
+        infoWindow: const InfoWindow(title: 'ตำแหน่งของคุณ'),
       ),
       Marker(
         markerId: const MarkerId('destination'),
         position: _destination,
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-        infoWindow: const InfoWindow(title: 'Destination'),
+        infoWindow: const InfoWindow(title: 'จุดหมาย'),
       ),
     };
 
@@ -350,10 +349,9 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
   }
 
   void _openExternalNavigation() {
-    // This would open platform-specific navigation apps
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text("Opening external navigation..."),
+        content: Text("กำลังเปิดการนำทาง..."),
         duration: Duration(seconds: 2),
       ),
     );
@@ -371,16 +369,16 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
               size: 24,
             ),
             SizedBox(width: 2.w),
-            const Text("Emergency"),
+            const Text("ฉุกเฉิน"),
           ],
         ),
         content: const Text(
-          "Are you in an emergency situation? This will immediately contact emergency services and notify RungrojCarRental support.",
+          "คุณอยู่ในสถานการณ์ฉุกเฉินหรือไม่? ระบบจะติดต่อหน่วยฉุกเฉินและแจ้งเจ้าหน้าที่รุ่งโรจน์คาร์เร้นท์ทันที",
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text("Cancel"),
+            child: const Text("ยกเลิก"),
           ),
           ElevatedButton(
             onPressed: () {
@@ -390,7 +388,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
             style: ElevatedButton.styleFrom(
               backgroundColor: AppTheme.errorLight,
             ),
-            child: const Text("Call Emergency"),
+            child: const Text("โทรฉุกเฉิน"),
           ),
         ],
       ),
@@ -409,7 +407,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
             ),
             SizedBox(width: 2.w),
             const Expanded(
-              child: Text("Contacting emergency services..."),
+              child: Text("กำลังติดต่อหน่วยฉุกเฉิน..."),
             ),
           ],
         ),
@@ -422,7 +420,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
   void _callDriver() {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text("Calling ${_driverData["name"]}..."),
+        content: Text("กำลังโทรหา ${_driverData["name"]}..."),
         duration: const Duration(seconds: 2),
       ),
     );
@@ -431,7 +429,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
   void _messageDriver() {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text("Opening chat with ${_driverData["name"]}..."),
+        content: Text("กำลังเปิดแชทกับ ${_driverData["name"]}..."),
         duration: const Duration(seconds: 2),
       ),
     );
@@ -444,7 +442,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
   void _addStop() {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text("Add stop feature coming soon..."),
+        content: Text("ฟีเจอร์เพิ่มจุดแวะพักจะเปิดให้ใช้เร็วๆ นี้..."),
         duration: Duration(seconds: 2),
       ),
     );
@@ -454,14 +452,14 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Cancel Ride"),
+        title: const Text("ยกเลิกการเดินทาง"),
         content: const Text(
-          "Are you sure you want to cancel this ride? A cancellation fee may apply.",
+          "คุณแน่ใจหรือไม่ว่าต้องการยกเลิกการเดินทาง? อาจมีค่าธรรมเนียมการยกเลิก",
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text("Keep Ride"),
+            child: const Text("ดำเนินการต่อ"),
           ),
           ElevatedButton(
             onPressed: () {
@@ -475,7 +473,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
             style: ElevatedButton.styleFrom(
               backgroundColor: AppTheme.errorLight,
             ),
-            child: const Text("Cancel Ride"),
+            child: const Text("ยกเลิกการเดินทาง"),
           ),
         ],
       ),
@@ -515,7 +513,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
             Container(
               color: theme.scaffoldBackgroundColor.withValues(alpha: 0.9),
               child: const LoadingSearchAnimation(
-                message: "Finding your driver...",
+                message: "กำลังค้นหาคนขับ...",
               ),
             ),
 
@@ -581,7 +579,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
                           ),
                           SizedBox(height: 2.h),
                           Text(
-                            "Driver Arrived!",
+                            "คนขับมาถึงแล้ว!",
                             style: theme.textTheme.headlineSmall?.copyWith(
                               fontWeight: FontWeight.w700,
                               color: Colors.white,
@@ -589,7 +587,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
                           ),
                           SizedBox(height: 1.h),
                           Text(
-                            "${_driverData["name"]} is waiting for you",
+                            "${_driverData["name"]} กำลังรอคุณอยู่",
                             style: theme.textTheme.bodyLarge?.copyWith(
                               color: Colors.white.withValues(alpha: 0.9),
                             ),

@@ -194,8 +194,8 @@ class _NotificationPreferencesScreenState
 
   Future<void> _enableAllNotifications() async {
     final confirm = await _showConfirmDialog(
-      'Enable All Notifications',
-      'Are you sure you want to enable all notification types?',
+      'เปิดการแจ้งเตือนทั้งหมด',
+      'คุณแน่ใจหรือไม่ว่าต้องการเปิดการแจ้งเตือนทุกประเภท?',
     );
 
     if (confirm != true) return;
@@ -205,9 +205,9 @@ class _NotificationPreferencesScreenState
     try {
       await _service.enableAllNotifications();
       await _loadPreferences();
-      _showSuccessSnackBar('All notifications enabled');
+      _showSuccessSnackBar('เปิดการแจ้งเตือนทั้งหมดแล้ว');
     } catch (e) {
-      _showErrorSnackBar('Failed to enable notifications: $e');
+      _showErrorSnackBar('ไม่สามารถเปิดการแจ้งเตือน: $e');
     } finally {
       setState(() => _isSaving = false);
     }
@@ -215,8 +215,8 @@ class _NotificationPreferencesScreenState
 
   Future<void> _disableAllNotifications() async {
     final confirm = await _showConfirmDialog(
-      'Disable All Notifications',
-      'Are you sure you want to disable all notification types? You will not receive any alerts.',
+      'ปิดการแจ้งเตือนทั้งหมด',
+      'คุณแน่ใจหรือไม่ว่าต้องการปิดการแจ้งเตือนทุกประเภท? คุณจะไม่ได้รับการแจ้งเตือนใดๆ',
     );
 
     if (confirm != true) return;
@@ -226,9 +226,9 @@ class _NotificationPreferencesScreenState
     try {
       await _service.disableAllNotifications();
       await _loadPreferences();
-      _showSuccessSnackBar('All notifications disabled');
+      _showSuccessSnackBar('ปิดการแจ้งเตือนทั้งหมดแล้ว');
     } catch (e) {
-      _showErrorSnackBar('Failed to disable notifications: $e');
+      _showErrorSnackBar('ไม่สามารถปิดการแจ้งเตือน: $e');
     } finally {
       setState(() => _isSaving = false);
     }
@@ -243,14 +243,14 @@ class _NotificationPreferencesScreenState
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: const Text('ยกเลิก'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blue.shade700,
             ),
-            child: const Text('Confirm'),
+            child: const Text('ยืนยัน'),
           ),
         ],
       ),
@@ -297,7 +297,8 @@ class _NotificationPreferencesScreenState
       backgroundColor: Colors.grey.shade50,
       appBar: CustomAppBar(
         variant: CustomAppBarVariant.standard,
-        title: 'Notification Preferences',
+        title: 'การตั้งค่าการแจ้งเตือน',
+        showBackButton: true,
         actions: [
           Stack(
             alignment: Alignment.center,
@@ -363,7 +364,7 @@ class _NotificationPreferencesScreenState
                             ),
                             SizedBox(height: 2.h),
                             Text(
-                              'Failed to load preferences',
+                              'ไม่สามารถโหลดการตั้งค่าได้',
                               style: TextStyle(
                                 fontSize: 16.sp,
                                 fontWeight: FontWeight.w600,
@@ -383,7 +384,7 @@ class _NotificationPreferencesScreenState
                             ElevatedButton.icon(
                               onPressed: _loadPreferences,
                               icon: const Icon(Icons.refresh),
-                              label: const Text('Retry'),
+                              label: const Text('ลองอีกครั้ง'),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.blue.shade700,
                                 padding: EdgeInsets.symmetric(
@@ -428,7 +429,7 @@ class _NotificationPreferencesScreenState
                                   ),
                                   SizedBox(width: 2.w),
                                   Text(
-                                    'Real-time notifications active',
+                                    'การแจ้งเตือนแบบเรียลไทม์ทำงานอยู่',
                                     style: TextStyle(
                                       fontSize: 11.sp,
                                       color: Colors.green.shade800,
@@ -476,7 +477,7 @@ class _NotificationPreferencesScreenState
                                   ),
                                   SizedBox(width: 2.w),
                                   Text(
-                                    'Notification Preferences',
+                                    'ส่วนตั้งค่าการแจ้งเตือน',
                                     style: TextStyle(
                                       fontSize: 13.sp,
                                       fontWeight: FontWeight.w600,
@@ -489,7 +490,7 @@ class _NotificationPreferencesScreenState
                             SizedBox(height: 2.h),
 
                             PreferenceSectionWidget(
-                              title: 'Booking Notifications',
+                              title: 'การแจ้งเตือนการจอง',
                               icon: Icons.event_note,
                               preferences: _groupedPreferences[
                                       'Booking Notifications'] ??
@@ -498,7 +499,7 @@ class _NotificationPreferencesScreenState
                               loadingPreferences: _loadingPreferences,
                             ),
                             PreferenceSectionWidget(
-                              title: 'Payment Notifications',
+                              title: 'การแจ้งเตือนการชำระเงิน',
                               icon: Icons.payment,
                               preferences: _groupedPreferences[
                                       'Payment Notifications'] ??
@@ -507,7 +508,7 @@ class _NotificationPreferencesScreenState
                               loadingPreferences: _loadingPreferences,
                             ),
                             PreferenceSectionWidget(
-                              title: 'Driver Communication',
+                              title: 'การสื่อสารกับคนขับ',
                               icon: Icons.directions_car,
                               preferences:
                                   _groupedPreferences['Driver Communication'] ??
@@ -516,7 +517,7 @@ class _NotificationPreferencesScreenState
                               loadingPreferences: _loadingPreferences,
                             ),
                             PreferenceSectionWidget(
-                              title: 'Marketing & Updates',
+                              title: 'การตลาดและอัปเดต',
                               icon: Icons.campaign,
                               preferences:
                                   _groupedPreferences['Marketing & Updates'] ??
@@ -541,7 +542,7 @@ class _NotificationPreferencesScreenState
                                   SizedBox(width: 3.w),
                                   Expanded(
                                     child: Text(
-                                      'Changes are saved automatically. Real-time alerts are delivered instantly for vehicle availability, booking confirmations, and rental status updates.',
+                                      'การเปลี่ยนแปลงจะบันทึกโดยอัตโนมัติ การแจ้งเตือนแบบเรียลไทม์จะส่งทันทีสำหรับความพร้อมใช้งานรถ การยืนยันการจอง และอัปเดตสถานะการเช่า',
                                       style: TextStyle(
                                         fontSize: 11.sp,
                                         color: Colors.blue.shade900,

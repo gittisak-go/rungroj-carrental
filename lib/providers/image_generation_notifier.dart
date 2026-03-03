@@ -40,9 +40,15 @@ class ImageGenerationState {
   }
 }
 
-class ImageGenerationNotifier extends AutoDisposeFamilyNotifier<ImageGenerationState, ImageGenerationConfig> {
+class ImageGenerationNotifier extends Notifier<ImageGenerationState> {
+  late final ImageGenerationConfig config;
+
   @override
-  ImageGenerationState build(ImageGenerationConfig arg) => const ImageGenerationState();
+  ImageGenerationState build() => const ImageGenerationState();
+
+  void setConfig(ImageGenerationConfig config) {
+    this.config = config;
+  }
 
   Future<Map<String, dynamic>?> generate(
     String prompt, {
@@ -51,8 +57,8 @@ class ImageGenerationNotifier extends AutoDisposeFamilyNotifier<ImageGenerationS
     state = const ImageGenerationState(isLoading: true);
     try {
       final result = await generateImage(
-        arg.provider,
-        arg.model,
+        config.provider,
+        config.model,
         prompt,
         parameters: parameters,
       );
@@ -71,4 +77,4 @@ class ImageGenerationNotifier extends AutoDisposeFamilyNotifier<ImageGenerationS
 }
 
 final imageGenerationNotifierProvider =
-    NotifierProvider.autoDispose.family<ImageGenerationNotifier, ImageGenerationState, ImageGenerationConfig>(ImageGenerationNotifier.new);
+    NotifierProvider<ImageGenerationNotifier, ImageGenerationState>(ImageGenerationNotifier.new);

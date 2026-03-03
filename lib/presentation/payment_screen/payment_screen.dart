@@ -29,10 +29,10 @@ class _PaymentScreenState extends State<PaymentScreen>
 
   // Mock data for ride details
   final Map<String, dynamic> rideDetails = {
-    'pickup': '123 Main Street, Downtown',
-    'destination': '456 Oak Avenue, Uptown District',
-    'duration': '18 mins',
-    'distance': '5.2 miles',
+    'pickup': '123 ถนนหลัก ใจกลางเมือง',
+    'destination': '456 ถนนโอ๊ค เขตอัพทาวน์',
+    'duration': '18 นาที',
+    'distance': '5.2 กม.',
     'driverName': 'Michael Rodriguez',
     'vehicleInfo': 'Toyota Camry • ABC-1234',
     'rideId': 'TXH-2025-001847',
@@ -57,28 +57,28 @@ class _PaymentScreenState extends State<PaymentScreen>
       'id': 1,
       'type': 'card',
       'name': 'Visa •••• 4532',
-      'details': 'Expires 12/26',
+      'details': 'หมดอายุ 12/26',
       'isDefault': true,
     },
     {
       'id': 2,
       'type': 'apple_pay',
       'name': 'Apple Pay',
-      'details': 'Touch ID or Face ID',
+      'details': 'Touch ID หรือ Face ID',
       'isDefault': false,
     },
     {
       'id': 3,
       'type': 'google_pay',
       'name': 'Google Pay',
-      'details': 'Fingerprint or PIN',
+      'details': 'ลายนิ้วมือหรือ PIN',
       'isDefault': false,
     },
     {
       'id': 4,
       'type': 'cash',
-      'name': 'Cash',
-      'details': 'Pay driver directly',
+      'name': 'เงินสด',
+      'details': 'ชำระให้คนขับโดยตรง',
       'isDefault': false,
     },
   ];
@@ -124,7 +124,7 @@ class _PaymentScreenState extends State<PaymentScreen>
           ),
         ),
         title: Text(
-          'Payment',
+          'การชำระเงิน',
           style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.w600,
             color: theme.colorScheme.onSurface,
@@ -215,7 +215,7 @@ class _PaymentScreenState extends State<PaymentScreen>
                 ),
                 SizedBox(width: 2.w),
                 Text(
-                  'Payment Method',
+                  'วิธีการชำระเงิน',
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                     color: theme.colorScheme.onSurface,
@@ -267,7 +267,7 @@ class _PaymentScreenState extends State<PaymentScreen>
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Total Amount',
+                  'ยอดรวมทั้งหมด',
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                     color: theme.colorScheme.onSurface,
@@ -309,7 +309,7 @@ class _PaymentScreenState extends State<PaymentScreen>
                           ),
                           SizedBox(width: 3.w),
                           Text(
-                            'Processing...',
+                            'กำลังดำเนินการ...',
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w600,
                               color: theme.colorScheme.onPrimary,
@@ -418,7 +418,7 @@ class _PaymentScreenState extends State<PaymentScreen>
             ),
             SizedBox(height: 2.h),
             Text(
-              'Payment Successful!',
+              'ชำระเงินสำเร็จ!',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w600,
                     color: Theme.of(context).colorScheme.onSurface,
@@ -427,7 +427,7 @@ class _PaymentScreenState extends State<PaymentScreen>
             ),
             SizedBox(height: 1.h),
             Text(
-              'Your ride has been paid for successfully. Receipt sent to your email.',
+              'การเดินทางของคุณได้รับการชำระเงินเรียบร้อยแล้ว ใบเสร็จถูกส่งไปยังอีเมลของคุณ',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
@@ -438,14 +438,14 @@ class _PaymentScreenState extends State<PaymentScreen>
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).pop(); // Close dialog
+                  Navigator.of(context).pop();
                   Navigator.pushNamedAndRemoveUntil(
                     context,
                     '/ride-history-screen',
                     (route) => false,
                   );
                 },
-                child: Text('View Receipt'),
+                child: const Text('ดูใบเสร็จ'),
               ),
             ),
           ],
@@ -481,7 +481,7 @@ class _PaymentScreenState extends State<PaymentScreen>
               ),
               SizedBox(height: 2.h),
               Text(
-                'Receipt Preview',
+                'ตัวอย่างใบเสร็จ',
                 style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.w600,
                   color: theme.colorScheme.onSurface,
@@ -508,7 +508,7 @@ class _PaymentScreenState extends State<PaymentScreen>
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () => Navigator.pop(context),
-                      child: Text('Close'),
+                      child: const Text('ปิด'),
                     ),
                   ),
                   SizedBox(width: 2.w),
@@ -518,7 +518,7 @@ class _PaymentScreenState extends State<PaymentScreen>
                         Navigator.pop(context);
                         _shareReceipt();
                       },
-                      child: Text('Share'),
+                      child: const Text('แชร์'),
                     ),
                   ),
                 ],
@@ -542,7 +542,7 @@ class _PaymentScreenState extends State<PaymentScreen>
       child: Column(
         children: [
           Text(
-            'RungrojCarRental',
+            'รุ่งโรจน์คาร์เร้นท์',
             style: theme.textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.w700,
               color: theme.colorScheme.primary,
@@ -550,20 +550,20 @@ class _PaymentScreenState extends State<PaymentScreen>
           ),
           SizedBox(height: 1.h),
           Text(
-            'Ride Receipt',
+            'ใบเสร็จการเดินทาง',
             style: theme.textTheme.titleMedium?.copyWith(
               color: theme.colorScheme.onSurface,
             ),
           ),
           SizedBox(height: 1.h),
           Text(
-            'Ride ID: ${rideDetails['rideId']}',
+            'รหัสการเดินทาง: ${rideDetails['rideId']}',
             style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
           Text(
-            'Date: ${DateTime.now().toString().split(' ')[0]}',
+            'วันที่: ${DateTime.now().toString().split(' ')[0]}',
             style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -577,7 +577,7 @@ class _PaymentScreenState extends State<PaymentScreen>
     HapticFeedback.selectionClick();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Receipt shared successfully!'),
+        content: const Text('แชร์ใบเสร็จสำเร็จ!'),
         backgroundColor: AppTheme.successLight,
       ),
     );

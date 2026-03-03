@@ -40,9 +40,9 @@ class _RideHistoryScreenState extends State<RideHistoryScreen>
   List<Map<String, dynamic>> _filteredRides = [];
 
   final List<TabItem> _tabs = const [
-    TabItem(label: 'All Rides', icon: Icons.list_rounded),
-    TabItem(label: 'Completed', icon: Icons.check_circle_rounded),
-    TabItem(label: 'Cancelled', icon: Icons.cancel_rounded),
+    TabItem(label: 'ทั้งหมด', icon: Icons.list_rounded),
+    TabItem(label: 'เสร็จสิ้น', icon: Icons.check_circle_rounded),
+    TabItem(label: 'ยกเลิก', icon: Icons.cancel_rounded),
   ];
 
   @override
@@ -277,7 +277,7 @@ class _RideHistoryScreenState extends State<RideHistoryScreen>
               children: [
                 Expanded(
                   child: Text(
-                    'Ride Details',
+                    'รายละเอียดการเดินทาง',
                     style: theme.textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
@@ -301,14 +301,14 @@ class _RideHistoryScreenState extends State<RideHistoryScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Trip Summary',
+                    'สรุปการเดินทาง',
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   SizedBox(height: 2.h),
                   Text(
-                    'This is a detailed view of your ride. In a real app, this would show the full receipt, route map, driver information, and additional trip details.',
+                    'นี่คือรายละเอียดการเดินทางของคุณ ในแอปจริงจะแสดงใบเสร็จ แผนที่เส้นทาง ข้อมูลคนขับ และรายละเอียดเพิ่มเติม',
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
@@ -324,11 +324,13 @@ class _RideHistoryScreenState extends State<RideHistoryScreen>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: AppTheme.lightTheme.scaffoldBackgroundColor,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: CustomAppBar(
         variant: CustomAppBarVariant.standard,
-        title: 'Ride History',
+        title: 'ประวัติการเช่า',
         showBackButton: false,
       ),
       body: Column(
@@ -442,12 +444,12 @@ class _RideHistoryScreenState extends State<RideHistoryScreen>
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: Text('Rate Your Driver'),
+              title: const Text('ให้คะแนนคนขับ'),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'How was your ride with ${rideData['driverName']}?',
+                    'การเดินทางกับ ${rideData['driverName']} เป็นอย่างไร?',
                     style: theme.textTheme.bodyMedium,
                   ),
                   SizedBox(height: 2.h),
@@ -477,18 +479,17 @@ class _RideHistoryScreenState extends State<RideHistoryScreen>
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: Text('Cancel'),
+                  child: const Text('ยกเลิก'),
                 ),
                 ElevatedButton(
                   onPressed: selectedRating > 0
                       ? () {
-                          // Update rating in ride data
                           rideData['rating'] = selectedRating;
                           Navigator.pop(context);
                           setState(() {});
                         }
                       : null,
-                  child: Text('Submit'),
+                  child: const Text('ยืนยัน'),
                 ),
               ],
             );
@@ -503,20 +504,19 @@ class _RideHistoryScreenState extends State<RideHistoryScreen>
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Report Issue'),
-          content: Text(
-              'Report an issue with this ride. In a real app, this would open a detailed issue reporting form.'),
+          title: const Text('แจ้งปัญหา'),
+          content: const Text(
+              'แจ้งปัญหาเกี่ยวกับการเดินทางนี้ ในแอปจริงจะเปิดฟอร์มแจ้งปัญหาแบบละเอียด'),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('Cancel'),
+              child: const Text('ยกเลิก'),
             ),
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
-                // Handle issue reporting
               },
-              child: Text('Report'),
+              child: const Text('แจ้ง'),
             ),
           ],
         );

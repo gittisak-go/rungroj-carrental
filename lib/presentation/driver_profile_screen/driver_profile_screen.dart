@@ -27,8 +27,7 @@ class _DriverProfileScreenState extends State<DriverProfileScreen>
   final Map<String, dynamic> _driverData = {
     "id": "driver_001",
     "name": "Michael Rodriguez",
-    "photo":
-        "https://images.unsplash.com/photo-1705645930353-0e335311ef20",
+    "photo": "https://images.unsplash.com/photo-1705645930353-0e335311ef20",
     "photoSemanticLabel":
         "Professional headshot of a Hispanic man with short dark hair and a friendly smile, wearing a navy blue collared shirt",
     "rating": 4.8,
@@ -46,8 +45,7 @@ class _DriverProfileScreenState extends State<DriverProfileScreen>
     "year": 2022,
     "color": "Silver",
     "licensePlate": "ABC-1234",
-    "photo":
-        "https://images.unsplash.com/photo-1705357760542-9aef89fa2910",
+    "photo": "https://images.unsplash.com/photo-1705357760542-9aef89fa2910",
     "photoSemanticLabel":
         "Silver Toyota Camry sedan parked on a clean street, showing the front and side profile of the vehicle",
   };
@@ -201,7 +199,7 @@ class _DriverProfileScreenState extends State<DriverProfileScreen>
           ),
           SizedBox(height: 3.h),
           Text(
-            'Loading driver profile...',
+            'กำลังโหลดโปรไฟล์คนขับ...',
             style: GoogleFonts.inter(
               fontSize: 16.sp,
               fontWeight: FontWeight.w500,
@@ -307,7 +305,7 @@ class _DriverProfileScreenState extends State<DriverProfileScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Previous Rides with ${_driverData["name"]}',
+            'การเดินทางก่อนหน้ากับ ${_driverData["name"]}',
             style: GoogleFonts.inter(
               fontSize: 16.sp,
               fontWeight: FontWeight.w600,

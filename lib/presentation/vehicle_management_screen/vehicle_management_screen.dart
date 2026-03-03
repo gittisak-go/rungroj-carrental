@@ -39,7 +39,7 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
       });
     } catch (e) {
       setState(() => _isLoading = false);
-      _showErrorSnackbar('Failed to load vehicles: $e');
+      _showErrorSnackbar('ไม่สามารถโหลดรถยนต์ได้: $e');
     }
   }
 
@@ -67,9 +67,9 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
           try {
             await _vehicleService.addVehicle(vehicle);
             _loadVehicles();
-            _showSuccessSnackbar('Vehicle added successfully');
+            _showSuccessSnackbar('เพิ่มรถยนต์สำเร็จ');
           } catch (e) {
-            _showErrorSnackbar('Failed to add vehicle: $e');
+            _showErrorSnackbar('ไม่สามารถเพิ่มรถยนต์ได้: $e');
           }
         },
       ),
@@ -85,9 +85,9 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
           try {
             await _vehicleService.updateVehicle(vehicle.id!, updatedVehicle);
             _loadVehicles();
-            _showSuccessSnackbar('Vehicle updated successfully');
+            _showSuccessSnackbar('อัปเดตรถยนต์สำเร็จ');
           } catch (e) {
-            _showErrorSnackbar('Failed to update vehicle: $e');
+            _showErrorSnackbar('ไม่สามารถอัปเดตรถยนต์ได้: $e');
           }
         },
       ),
@@ -98,18 +98,18 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Delete Vehicle'),
+        title: const Text('ลบรถยนต์'),
         content: Text(
-            'Are you sure you want to delete ${vehicle.brand} ${vehicle.model}?'),
+            'คุณแน่ใจหรือไม่ว่าต้องการลบ ${vehicle.brand} ${vehicle.model}?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text('Cancel'),
+            child: const Text('ยกเลิก'),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: Text('Delete'),
+            child: const Text('ลบ'),
           ),
         ],
       ),
@@ -119,9 +119,9 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
       try {
         await _vehicleService.deleteVehicle(vehicle.id!);
         _loadVehicles();
-        _showSuccessSnackbar('Vehicle deleted successfully');
+        _showSuccessSnackbar('ลบรถยนต์สำเร็จ');
       } catch (e) {
-        _showErrorSnackbar('Failed to delete vehicle: $e');
+        _showErrorSnackbar('ไม่สามารถลบรถยนต์ได้: $e');
       }
     }
   }
@@ -157,9 +157,17 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
             fontWeight: FontWeight.bold,
           ),
         ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios),
+          onPressed: () => Navigator.pushNamedAndRemoveUntil(
+            context,
+            '/ride-request-screen',
+            (route) => false,
+          ),
+        ),
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh),
             onPressed: _loadVehicles,
           ),
         ],
@@ -241,7 +249,7 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
                             ),
                             SizedBox(height: 2.h),
                             Text(
-                              'No vehicles found',
+                              'ไม่พบรถยนต์',
                               style: TextStyle(
                                 fontSize: 16.sp,
                                 color: Colors.grey,

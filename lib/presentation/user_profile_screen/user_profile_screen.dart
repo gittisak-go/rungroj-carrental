@@ -73,7 +73,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           ),
         ),
         title: Text(
-          'Profile',
+          'โปรไฟล์ของฉัน',
           style: theme.textTheme.headlineSmall?.copyWith(
             fontWeight: FontWeight.w600,
             color: theme.colorScheme.onSurface,
@@ -111,23 +111,23 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
             // Personal Information Section
             ProfileSectionWidget(
-              title: 'Personal Information',
+              title: 'ข้อมูลส่วนตัว',
               children: [
                 ProfileMenuItemWidget(
                   icon: 'person',
-                  title: 'Edit Profile',
+                  title: 'แก้ไขโปรไฟล์',
                   subtitle: 'อัปเดตข้อมูลส่วนตัวของคุณ',
                   onTap: _showEditProfileDialog,
                 ),
                 ProfileMenuItemWidget(
                   icon: 'phone',
-                  title: 'Phone Number',
+                  title: 'หมายเลขโทรศัพท์',
                   subtitle: _userData["phone"] as String,
                   onTap: _showPhoneEditDialog,
                 ),
                 ProfileMenuItemWidget(
                   icon: 'email',
-                  title: 'Email Address',
+                  title: 'อีเมล',
                   subtitle: _userData["email"] as String,
                   onTap: _showEmailEditDialog,
                 ),
@@ -136,11 +136,11 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
             // Preferences Section
             ProfileSectionWidget(
-              title: 'Preferences',
+              title: 'การตั้งค่า',
               children: [
                 ToggleMenuItemWidget(
                   icon: 'dark_mode',
-                  title: 'Dark Mode',
+                  title: 'โหมดมืด',
                   subtitle: 'เปลี่ยนระหว่างธีมสว่างและมืด',
                   value: _isDarkMode,
                   onChanged: (value) {
@@ -150,7 +150,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 ),
                 ToggleMenuItemWidget(
                   icon: 'notifications',
-                  title: 'Push Notifications',
+                  title: 'การแจ้งเตือน',
                   subtitle: 'รับการอัปเดตการเดินทางและโปรโมชั่น',
                   value: _notificationsEnabled,
                   onChanged: (value) {
@@ -160,7 +160,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 ),
                 ToggleMenuItemWidget(
                   icon: 'location_on',
-                  title: 'Location Services',
+                  title: 'บริการตำแหน่ง',
                   subtitle: 'อนุญาตให้เข้าถึงตำแหน่งเพื่อบริการที่ดีขึ้น',
                   value: _locationEnabled,
                   onChanged: (value) {
@@ -170,7 +170,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 ),
                 ProfileMenuItemWidget(
                   icon: 'language',
-                  title: 'Language',
+                  title: 'ภาษา',
                   subtitle: 'ภาษาไทย',
                   onTap: _showLanguageDialog,
                 ),
@@ -179,7 +179,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
             // Payment Methods Section
             ProfileSectionWidget(
-              title: 'Payment Methods',
+              title: 'วิธีการชำระเงิน',
               showDivider: false,
               children: [
                 ...((_userData["paymentMethods"] as List)
@@ -195,7 +195,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     .toList()),
                 ProfileMenuItemWidget(
                   icon: 'add',
-                  title: 'Add Payment Method',
+                  title: 'เพิ่มวิธีการชำระเงิน',
                   subtitle: 'เพิ่มบัตรหรือวิธีการชำระเงินใหม่',
                   onTap: _showAddPaymentDialog,
                   iconColor: theme.colorScheme.primary,
@@ -205,25 +205,25 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
             // Ride Preferences Section
             ProfileSectionWidget(
-              title: 'Ride Preferences',
+              title: 'ความต้องการการเดินทาง',
               children: [
                 ProfileMenuItemWidget(
                   icon: 'directions_car',
-                  title: 'Default Vehicle Type',
+                  title: 'ประเภทยานพาหนะเริ่มต้น',
                   subtitle: (_userData["preferences"] as Map)["vehicleType"]
                       as String,
                   onTap: _showVehicleTypeDialog,
                 ),
                 ProfileMenuItemWidget(
                   icon: 'attach_money',
-                  title: 'Automatic Tip',
+                  title: 'ทิปอัตโนมัติ',
                   subtitle:
                       (_userData["preferences"] as Map)["autoTip"] as String,
                   onTap: _showTipDialog,
                 ),
                 ProfileMenuItemWidget(
                   icon: 'note',
-                  title: 'Pickup Instructions',
+                  title: 'คำแนะนำการรับ',
                   subtitle: (_userData["preferences"]
                       as Map)["pickupInstructions"] as String,
                   onTap: _showInstructionsDialog,
@@ -233,18 +233,18 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
             // Safety Section
             ProfileSectionWidget(
-              title: 'Safety & Security',
+              title: 'ความปลอดภัยและความปลอดภัย',
               children: [
                 ProfileMenuItemWidget(
                   icon: 'emergency',
-                  title: 'Emergency Contacts',
+                  title: 'ผู้ติดต่อฉุกเฉิน',
                   subtitle:
                       'เพิ่มผู้ติดต่อฉุกเฉิน ${(_userData["emergencyContacts"] as List).length} ราย',
                   onTap: _showEmergencyContactsDialog,
                 ),
                 ToggleMenuItemWidget(
                   icon: 'fingerprint',
-                  title: 'Biometric Authentication',
+                  title: 'การยืนยันตัวตนด้วยไบอเมตริกซ์',
                   subtitle: 'ใช้ลายนิ้วมือหรือ Face ID สำหรับการชำระเงิน',
                   value: _biometricEnabled,
                   onChanged: (value) {
@@ -254,7 +254,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 ),
                 ProfileMenuItemWidget(
                   icon: 'security',
-                  title: 'Privacy Settings',
+                  title: 'การตั้งค่าความเป็นส่วนตัว',
                   subtitle: 'จัดการข้อมูลและความเป็นส่วนตัวของคุณ',
                   onTap: _showPrivacyDialog,
                 ),
@@ -263,23 +263,23 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
             // Support Section
             ProfileSectionWidget(
-              title: 'Support',
+              title: 'ฝ่ายสนับสนุน',
               children: [
                 ProfileMenuItemWidget(
                   icon: 'help',
-                  title: 'Help Center',
+                  title: 'ศูนย์ช่วยเหลือ',
                   subtitle: 'รับความช่วยเหลือและการสนับสนุน',
                   onTap: _showHelpCenter,
                 ),
                 ProfileMenuItemWidget(
                   icon: 'feedback',
-                  title: 'Send Feedback',
+                  title: 'ส่งคำติชม',
                   subtitle: 'แบ่งปันความคิดเห็นของคุณกับเรา',
                   onTap: _showFeedbackDialog,
                 ),
                 ProfileMenuItemWidget(
                   icon: 'info',
-                  title: 'About RungrojCarRental',
+                  title: 'เกี่ยวกับรุ่งโรจน์คาร์เร้นท์',
                   subtitle: 'เวอร์ชัน 1.0.0',
                   onTap: _showAboutDialog,
                 ),
@@ -288,17 +288,17 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
             // Account Management Section
             ProfileSectionWidget(
-              title: 'Account',
+              title: 'บัญชี',
               children: [
                 ProfileMenuItemWidget(
                   icon: 'lock',
-                  title: 'Change Password',
+                  title: 'เปลี่ยนรหัสผ่าน',
                   subtitle: 'อัปเดตรหัสผ่านบัญชีของคุณ',
                   onTap: _showChangePasswordDialog,
                 ),
                 ProfileMenuItemWidget(
                   icon: 'logout',
-                  title: 'Sign Out',
+                  title: 'ออกจากระบบ',
                   subtitle: 'ออกจากระบบบัญชีของคุณ',
                   onTap: _showLogoutDialog,
                   iconColor: theme.colorScheme.error,
@@ -306,7 +306,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 ),
                 ProfileMenuItemWidget(
                   icon: 'delete_forever',
-                  title: 'Delete Account',
+                  title: 'ลบบัญชี',
                   subtitle: 'ลบบัญชีของคุณอย่างถาวร',
                   onTap: _showDeleteAccountDialog,
                   iconColor: theme.colorScheme.error,

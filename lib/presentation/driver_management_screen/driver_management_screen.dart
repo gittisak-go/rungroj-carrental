@@ -320,6 +320,14 @@ class _DriverManagementScreenState extends State<DriverManagementScreen> {
         elevation: 0,
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios),
+          onPressed: () => Navigator.pushNamedAndRemoveUntil(
+            context,
+            '/ride-request-screen',
+            (route) => false,
+          ),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.file_download_outlined),

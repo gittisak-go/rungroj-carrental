@@ -148,13 +148,21 @@ class _AdminReservationsScreenState extends State<AdminReservationsScreen> {
             fontWeight: FontWeight.bold,
           ),
         ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios),
+          onPressed: () => Navigator.pushNamedAndRemoveUntil(
+            context,
+            '/admin-dashboard-screen',
+            (route) => false,
+          ),
+        ),
         actions: [
           IconButton(
-            icon: Icon(Icons.filter_list),
+            icon: const Icon(Icons.filter_list),
             onPressed: _showFilterSheet,
           ),
           IconButton(
-            icon: Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh),
             onPressed: _loadData,
           ),
         ],
