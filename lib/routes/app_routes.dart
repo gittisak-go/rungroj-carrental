@@ -19,10 +19,29 @@ import '../presentation/splash_screen/splash_screen.dart';
 import '../presentation/user_profile_screen/user_profile_screen.dart';
 import '../presentation/vehicle_management_screen/vehicle_management_screen.dart';
 import '../presentation/notification_preferences_screen/notification_preferences_screen.dart';
+import '../presentation/onboarding_screen/onboarding_screen.dart';
+import '../presentation/new_screen_1_screen/new_screen_1_screen.dart';
+import '../presentation/property_dashboard_screen/property_dashboard_screen.dart';
+import '../presentation/property_details_screen/property_details_screen.dart';
+import '../presentation/tenant_directory_screen/tenant_directory_screen.dart';
+import '../presentation/maintenance_requests_screen/maintenance_requests_screen.dart';
+import '../presentation/payment_history_screen/payment_history_screen.dart';
+import '../presentation/add_new_property_screen/add_new_property_screen.dart';
+import '../presentation/financial_reports_screen/financial_reports_screen.dart';
+import '../presentation/settings_screen/settings_screen.dart';
 
 class AppRoutes {
-  // TODO: Add your routes here
   static const String initial = '/';
+  static const String onboarding = '/onboarding';
+  static const String home = '/home';
+  static const String propertyDashboard = '/property-dashboard';
+  static const String propertyDetails = '/property-details';
+  static const String tenantDirectory = '/tenant-directory';
+  static const String maintenanceRequests = '/maintenance-requests';
+  static const String paymentHistory = '/payment-history';
+  static const String addNewProperty = '/add-new-property';
+  static const String financialReports = '/financial-reports';
+  static const String settingsScreen = '/settings';
   static const String rideRequest = '/ride-request-screen';
   static const String liveTracking = '/live-tracking-screen';
   static const String splash = '/splash-screen';
@@ -45,7 +64,17 @@ class AppRoutes {
       '/notification-preferences-screen';
 
   static Map<String, WidgetBuilder> get routes => {
-    initial: (context) => const RideRequestScreen(),
+    initial: (context) => const OnboardingScreen(),
+    onboarding: (context) => const OnboardingScreen(),
+    home: (context) => const NewScreen1Screen(),
+    propertyDashboard: (context) => const PropertyDashboardScreen(),
+    propertyDetails: (context) => const PropertyDetailsScreen(),
+    tenantDirectory: (context) => const TenantDirectoryScreen(),
+    maintenanceRequests: (context) => const MaintenanceRequestsScreen(),
+    paymentHistory: (context) => const PaymentHistoryScreen(),
+    addNewProperty: (context) => const AddNewPropertyScreen(),
+    financialReports: (context) => const FinancialReportsScreen(),
+    settingsScreen: (context) => const SettingsScreen(),
     rideRequest: (context) => const RideRequestScreen(),
     liveTracking: (context) => const LiveTrackingScreen(),
     splash: (context) => const SplashScreen(),
