@@ -37,6 +37,10 @@ dependencies:
 
   universal_html: ^2.2.4
   flutter_riverpod: any
+  go_router: ^14.0.0
+  shimmer: ^3.0.0
+  image_picker: ^1.1.2
+  package_info_plus: ^8.0.0
 dev_dependencies:
   flutter_test:    # CRITICAL: Required for Flutter project testing - DO NOT REMOVE
     sdk: flutter   # CRITICAL: Required for Flutter project testing - DO NOT REMOVE
