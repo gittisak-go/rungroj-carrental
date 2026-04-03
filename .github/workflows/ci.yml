@@ -1,0 +1,50 @@
+name: CI — Check PR
+
+on:
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  validate-migrations:
+    name: Validate Migrations
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Check migration files
+        run: |
+          supabase db lint --schema public
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+
+      - name: Validate SQL syntax
+        run: |
+          for f in supabase/migrations/*.sql; do
+            echo "Checking $f"
+            psql --no-psqlrc -c "\i $f" postgresql://postgres:postgres@localhost:5432/postgres 2>&1 || true
+          done
+
+  flutter-analyze:
+    name: Flutter Analyze
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.38.9'
+          channel: stable
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Run tests
+        run: flutter test

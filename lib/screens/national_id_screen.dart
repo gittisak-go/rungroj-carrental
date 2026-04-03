@@ -74,7 +74,7 @@ class _NationalIdScreenState extends State<NationalIdScreen> {
     if (valid) {
       setState(() => _state = _VerifyState.success);
       await Future.delayed(const Duration(seconds: 2));
-      if (mounted) context.go('/nfc-scan/${widget.bookingId}?mode=checkin');
+      if (mounted) context.go('/nfc/${widget.bookingId}?mode=checkin');
     } else {
       setState(() {
         _state = _VerifyState.failed;
