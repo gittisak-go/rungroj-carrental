@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard — รุ่งโรจน์คาร์เร้นท์</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bg:        '#0A0A12',
+            surface:   '#16161E',
+            surface2:  '#1E1E28',
+            primary:   '#FF2D78',
+            secondary: '#2979FF',
+            accent:    '#FFE500',
+            success:   '#00FFC2',
+            error:     '#FF453A',
+            textHigh:  '#FFFFFF',
+            textMed:   '#AAAAAA',
+            textLow:   '#555560',
+          },
+          fontFamily: {
+            sans: ['"Noto Sans Thai"', '"Poppins"', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    * { box-sizing: border-box; }
+    body { background: #0A0A12; color: #FFFFFF; font-family: 'Noto Sans Thai', 'Poppins', sans-serif; margin: 0; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #16161E; }
+    ::-webkit-scrollbar-thumb { background: #555560; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #FF2D78; }
+
+    .sidebar-link { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 10px; cursor: pointer; transition: background 0.2s, color 0.2s; color: #AAAAAA; font-size: 14px; }
+    .sidebar-link:hover { background: #1E1E28; color: #FFFFFF; }
+    .sidebar-link.active { background: linear-gradient(135deg, rgba(255,45,120,0.25), rgba(41,121,255,0.15)); color: #FF2D78; border-left: 3px solid #FF2D78; }
+
+    .stat-card { background: #16161E; border: 1px solid #1E1E28; border-radius: 14px; padding: 20px; transition: transform 0.2s, border-color 0.2s; }
+    .stat-card:hover { transform: translateY(-2px); border-color: #FF2D78; }
+
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th { background: #1E1E28; color: #AAAAAA; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; padding: 10px 14px; text-align: left; font-weight: 600; }
+    .data-table td { padding: 12px 14px; border-bottom: 1px solid #1E1E28; font-size: 13px; color: #FFFFFF; }
+    .data-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .data-table tr:last-child td { border-bottom: none; }
+
+    .badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; letter-spacing: 0.04em; }
+
+    .gradient-primary { background: linear-gradient(135deg, #FF2D78, #FF6B6B); }
+    .gradient-blue    { background: linear-gradient(135deg, #2979FF, #00B4FF); }
+
+    .page-section { display: none; }
+    .page-section.active { display: block; }
+
+    #login-screen { position: fixed; inset: 0; background: #0A0A12; z-index: 100; display: flex; align-items: center; justify-content: center; }
+    #dashboard { display: none; }
+
+    .input-field {
+      width: 100%; background: #1E1E28; border: 1px solid #555560; border-radius: 10px;
+      color: #FFFFFF; padding: 12px 16px; font-size: 14px; outline: none; transition: border-color 0.2s;
+      font-family: 'Noto Sans Thai', 'Poppins', sans-serif;
+    }
+    .input-field:focus { border-color: #FF2D78; }
+    .input-field::placeholder { color: #555560; }
+
+    .btn-primary { background: linear-gradient(135deg, #FF2D78, #FF6B6B); color: #FFFFFF; border: none; border-radius: 10px; padding: 12px 24px; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; width: 100%; font-family: 'Noto Sans Thai', 'Poppins', sans-serif; }
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .table-container { overflow-x: auto; border-radius: 12px; border: 1px solid #1E1E28; background: #16161E; }
+
+    .loading-dots::after { content: ''; animation: dots 1.5s infinite; }
+    @keyframes dots { 0%,20%{content:'.'} 40%{content:'..'} 60%,100%{content:'...'} }
+
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .section-title { font-size: 20px; font-weight: 700; color: #FFFFFF; }
+    .section-subtitle { font-size: 13px; color: #AAAAAA; margin-top: 2px; }
+
+    .refresh-btn { background: #1E1E28; border: 1px solid #555560; color: #AAAAAA; border-radius: 8px; padding: 8px 14px; font-size: 12px; cursor: pointer; transition: all 0.2s; font-family: 'Noto Sans Thai', 'Poppins', sans-serif; display: flex; align-items: center; gap: 6px; }
+    .refresh-btn:hover { border-color: #FF2D78; color: #FF2D78; }
+
+    .empty-state { text-align: center; padding: 60px 20px; color: #555560; }
+    .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+    .empty-state p { font-size: 14px; }
+
+    .toast { position: fixed; bottom: 24px; right: 24px; background: #1E1E28; border: 1px solid #555560; border-radius: 10px; padding: 12px 20px; font-size: 13px; z-index: 999; transform: translateY(100px); opacity: 0; transition: all 0.3s; max-width: 300px; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.success { border-color: #00FFC2; color: #00FFC2; }
+    .toast.error { border-color: #FF453A; color: #FF453A; }
+
+    /* Sidebar mobile toggle */
+    #sidebar { transition: transform 0.3s; }
+    @media (max-width: 768px) {
+      #sidebar { position: fixed; z-index: 50; height: 100vh; transform: translateX(-100%); }
+      #sidebar.open { transform: translateX(0); }
+      #main-content { margin-left: 0 !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ========== LOGIN SCREEN ========== -->
+<div id="login-screen">
+  <div style="width: 100%; max-width: 420px; padding: 24px;">
+    <!-- Logo -->
+    <div class="text-center mb-8">
+      <div style="width:64px;height:64px;border-radius:16px;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;" class="gradient-primary">
+        <span style="font-size:28px;">🚗</span>
+      </div>
+      <h1 style="font-size:24px;font-weight:700;color:#FFFFFF;margin-bottom:4px;">รุ่งโรจน์คาร์เร้นท์</h1>
+      <p style="color:#AAAAAA;font-size:13px;">Admin Dashboard</p>
+    </div>
+
+    <!-- Login card -->
+    <div style="background:#16161E;border:1px solid #1E1E28;border-radius:16px;padding:32px;">
+      <h2 style="font-size:18px;font-weight:600;margin-bottom:6px;">เข้าสู่ระบบ</h2>
+      <p style="color:#AAAAAA;font-size:13px;margin-bottom:24px;">เฉพาะผู้ดูแลระบบเท่านั้น</p>
+
+      <div id="login-error" style="display:none;background:rgba(255,69,58,0.1);border:1px solid #FF453A;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:#FF453A;"></div>
+
+      <form id="login-form" onsubmit="handleLogin(event)">
+        <div style="margin-bottom:16px;">
+          <label style="display:block;font-size:13px;color:#AAAAAA;margin-bottom:6px;">อีเมล</label>
+          <input id="login-email" type="email" class="input-field" placeholder="admin@example.com" required />
+        </div>
+        <div style="margin-bottom:24px;">
+          <label style="display:block;font-size:13px;color:#AAAAAA;margin-bottom:6px;">รหัสผ่าน</label>
+          <input id="login-password" type="password" class="input-field" placeholder="••••••••" required />
+        </div>
+        <button type="submit" id="login-btn" class="btn-primary">เข้าสู่ระบบ</button>
+      </form>
+    </div>
+
+    <p style="text-align:center;color:#555560;font-size:12px;margin-top:20px;">รุ่งโรจน์คาร์เร้นท์ © 2026</p>
+  </div>
+</div>
+
+<!-- ========== UNAUTHORIZED SCREEN ========== -->
+<div id="unauthorized-screen" style="display:none;position:fixed;inset:0;background:#0A0A12;z-index:99;align-items:center;justify-content:center;flex-direction:column;">
+  <div style="font-size:64px;margin-bottom:16px;">🚫</div>
+  <h2 style="font-size:22px;font-weight:700;margin-bottom:8px;color:#FF453A;">ไม่มีสิทธิ์เข้าถึง</h2>
+  <p style="color:#AAAAAA;font-size:14px;margin-bottom:24px;">บัญชีนี้ไม่ใช่ผู้ดูแลระบบ</p>
+  <button onclick="handleLogout()" style="background:#1E1E28;border:1px solid #555560;color:#FFFFFF;border-radius:10px;padding:10px 24px;cursor:pointer;font-size:14px;font-family:'Noto Sans Thai','Poppins',sans-serif;">ออกจากระบบ</button>
+</div>
+
+<!-- ========== DASHBOARD ========== -->
+<div id="dashboard" style="display:flex;min-height:100vh;">
+
+  <!-- Sidebar -->
+  <aside id="sidebar" style="width:240px;background:#16161E;border-right:1px solid #1E1E28;padding:20px 12px;flex-shrink:0;display:flex;flex-direction:column;">
+
+    <!-- Brand -->
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;margin-bottom:24px;">
+      <div style="width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;" class="gradient-primary">
+        <span style="font-size:16px;">🚗</span>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:700;line-height:1.2;">รุ่งโรจน์</div>
+        <div style="font-size:10px;color:#AAAAAA;line-height:1.2;">คาร์เร้นท์</div>
+      </div>
+    </div>
+
+    <!-- Nav links -->
+    <nav style="flex:1;display:flex;flex-direction:column;gap:4px;">
+      <a class="sidebar-link active" onclick="showSection('overview')" data-section="overview">
+        <span>🏠</span><span>ภาพรวม</span>
+      </a>
+      <a class="sidebar-link" onclick="showSection('cars')" data-section="cars">
+        <span>🚗</span><span>รถ</span>
+      </a>
+      <a class="sidebar-link" onclick="showSection('bookings')" data-section="bookings">
+        <span>📅</span><span>การจอง</span>
+      </a>
+      <a class="sidebar-link" onclick="showSection('payments')" data-section="payments">
+        <span>💳</span><span>การชำระเงิน</span>
+      </a>
+      <a class="sidebar-link" onclick="showSection('users')" data-section="users">
+        <span>👥</span><span>ผู้ใช้งาน</span>
+      </a>
+      <a class="sidebar-link" onclick="showSection('sim')" data-section="sim">
+        <span>📡</span><span>SIM/GPS</span>
+      </a>
+      <a class="sidebar-link" onclick="showSection('audit')" data-section="audit">
+        <span>📋</span><span>Audit Log</span>
+      </a>
+    </nav>
+
+    <!-- Bottom: user info + logout -->
+    <div style="border-top:1px solid #1E1E28;padding-top:16px;margin-top:16px;">
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;margin-bottom:8px;">
+        <div style="width:32px;height:32px;border-radius:50%;background:#FF2D78;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;">👤</div>
+        <div style="overflow:hidden;">
+          <div id="sidebar-user-email" style="font-size:12px;color:#FFFFFF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px;">-</div>
+          <div id="sidebar-user-role" style="font-size:10px;color:#AAAAAA;">-</div>
+        </div>
+      </div>
+      <button onclick="handleLogout()" style="width:100%;background:#1E1E28;border:1px solid #555560;color:#AAAAAA;border-radius:8px;padding:8px;font-size:12px;cursor:pointer;transition:all 0.2s;font-family:'Noto Sans Thai','Poppins',sans-serif;" onmouseover="this.style.borderColor='#FF453A';this.style.color='#FF453A'" onmouseout="this.style.borderColor='#555560';this.style.color='#AAAAAA'">
+        🚪 ออกจากระบบ
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main id="main-content" style="flex:1;overflow-y:auto;padding:28px;min-width:0;">
+
+    <!-- Mobile menu button -->
+    <button id="mobile-menu-btn" onclick="toggleSidebar()" style="display:none;background:#1E1E28;border:1px solid #555560;color:#FFFFFF;border-radius:8px;padding:8px 12px;cursor:pointer;margin-bottom:16px;font-size:14px;">☰ เมนู</button>
+
+    <!-- ====== OVERVIEW ====== -->
+    <section id="section-overview" class="page-section active">
+      <div class="section-header">
+        <div>
+          <div class="section-title">ภาพรวม</div>
+          <div class="section-subtitle" id="overview-date">-</div>
+        </div>
+        <button class="refresh-btn" onclick="loadOverview()">🔄 รีเฟรช</button>
+      </div>
+
+      <!-- Stat cards -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-bottom:28px;">
+        <div class="stat-card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+            <span style="font-size:12px;color:#AAAAAA;font-weight:500;">รถทั้งหมด</span>
+            <span style="font-size:22px;">🚗</span>
+          </div>
+          <div id="stat-total-cars" style="font-size:32px;font-weight:700;color:#FFFFFF;">—</div>
+          <div style="font-size:11px;color:#AAAAAA;margin-top:4px;">คันในระบบ</div>
+        </div>
+
+        <div class="stat-card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+            <span style="font-size:12px;color:#AAAAAA;font-weight:500;">การจองวันนี้</span>
+            <span style="font-size:22px;">📅</span>
+          </div>
+          <div id="stat-today-bookings" style="font-size:32px;font-weight:700;color:#FF2D78;">—</div>
+          <div style="font-size:11px;color:#AAAAAA;margin-top:4px;">รายการ</div>
+        </div>
+
+        <div class="stat-card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+            <span style="font-size:12px;color:#AAAAAA;font-weight:500;">รายได้เดือนนี้</span>
+            <span style="font-size:22px;">💰</span>
+          </div>
+          <div id="stat-monthly-revenue" style="font-size:32px;font-weight:700;color:#00FFC2;">—</div>
+          <div style="font-size:11px;color:#AAAAAA;margin-top:4px;">บาท</div>
+        </div>
+
+        <div class="stat-card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+            <span style="font-size:12px;color:#AAAAAA;font-weight:500;">SIM ออนไลน์</span>
+            <span style="font-size:22px;">📡</span>
+          </div>
+          <div id="stat-sim-online" style="font-size:32px;font-weight:700;color:#2979FF;">—</div>
+          <div style="font-size:11px;color:#AAAAAA;margin-top:4px;">อุปกรณ์</div>
+        </div>
+      </div>
+
+      <!-- Quick stats row -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:28px;">
+        <div style="background:#16161E;border:1px solid #1E1E28;border-radius:12px;padding:14px;">
+          <div style="font-size:11px;color:#AAAAAA;margin-bottom:6px;">รถว่าง</div>
+          <div id="stat-available-cars" style="font-size:20px;font-weight:700;color:#00FFC2;">—</div>
+        </div>
+        <div style="background:#16161E;border:1px solid #1E1E28;border-radius:12px;padding:14px;">
+          <div style="font-size:11px;color:#AAAAAA;margin-bottom:6px;">กำลังให้เช่า</div>
+          <div id="stat-rented-cars" style="font-size:20px;font-weight:700;color:#2979FF;">—</div>
+        </div>
+        <div style="background:#16161E;border:1px solid #1E1E28;border-radius:12px;padding:14px;">
+          <div style="font-size:11px;color:#AAAAAA;margin-bottom:6px;">ซ่อมบำรุง</div>
+          <div id="stat-maintenance-cars" style="font-size:20px;font-weight:700;color:#FF453A;">—</div>
+        </div>
+        <div style="background:#16161E;border:1px solid #1E1E28;border-radius:12px;padding:14px;">
+          <div style="font-size:11px;color:#AAAAAA;margin-bottom:6px;">การจองรอดำเนินการ</div>
+          <div id="stat-pending-bookings" style="font-size:20px;font-weight:700;color:#FFE500;">—</div>
+        </div>
+        <div style="background:#16161E;border:1px solid #1E1E28;border-radius:12px;padding:14px;">
+          <div style="font-size:11px;color:#AAAAAA;margin-bottom:6px;">ผู้ใช้ทั้งหมด</div>
+          <div id="stat-total-users" style="font-size:20px;font-weight:700;color:#FF2D78;">—</div>
+        </div>
+        <div style="background:#16161E;border:1px solid #1E1E28;border-radius:12px;padding:14px;">
+          <div style="font-size:11px;color:#AAAAAA;margin-bottom:6px;">การชำระเงินวันนี้</div>
+          <div id="stat-today-payments" style="font-size:20px;font-weight:700;color:#FFE500;">—</div>
+        </div>
+      </div>
+
+      <!-- Recent bookings table -->
+      <div>
+        <div style="font-size:15px;font-weight:600;margin-bottom:12px;">การจองล่าสุด</div>
+        <div class="table-container">
+          <div id="overview-recent-loading" style="padding:40px;text-align:center;color:#AAAAAA;font-size:13px;" class="loading-dots">กำลังโหลด</div>
+          <table class="data-table" id="overview-recent-table" style="display:none;">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>รถ</th>
+                <th>ผู้ใช้</th>
+                <th>วันที่เริ่ม</th>
+                <th>วันที่สิ้นสุด</th>
+                <th>สถานะ</th>
+                <th>ยอดรวม</th>
+              </tr>
+            </thead>
+            <tbody id="overview-recent-tbody"></tbody>
+          </table>
+          <div id="overview-recent-empty" class="empty-state" style="display:none;"><div class="icon">📅</div><p>ยังไม่มีข้อมูลการจอง</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== CARS ====== -->
+    <section id="section-cars" class="page-section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">รถ</div>
+          <div class="section-subtitle">รายการรถทั้งหมดในระบบ</div>
+        </div>
+        <button class="refresh-btn" onclick="loadCars()">🔄 รีเฟรช</button>
+      </div>
+      <div class="table-container">
+        <div id="cars-loading" style="padding:40px;text-align:center;color:#AAAAAA;font-size:13px;" class="loading-dots">กำลังโหลด</div>
+        <table class="data-table" id="cars-table" style="display:none;">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>ยี่ห้อ</th>
+              <th>รุ่น</th>
+              <th>ทะเบียน</th>
+              <th>สถานะ</th>
+              <th>ราคา/วัน</th>
+              <th>สี</th>
+              <th>ปี</th>
+            </tr>
+          </thead>
+          <tbody id="cars-tbody"></tbody>
+        </table>
+        <div id="cars-empty" class="empty-state" style="display:none;"><div class="icon">🚗</div><p>ยังไม่มีข้อมูลรถ</p></div>
+      </div>
+    </section>
+
+    <!-- ====== BOOKINGS ====== -->
+    <section id="section-bookings" class="page-section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">การจอง</div>
+          <div class="section-subtitle">รายการการจองทั้งหมด</div>
+        </div>
+        <button class="refresh-btn" onclick="loadBookings()">🔄 รีเฟรช</button>
+      </div>
+      <div class="table-container">
+        <div id="bookings-loading" style="padding:40px;text-align:center;color:#AAAAAA;font-size:13px;" class="loading-dots">กำลังโหลด</div>
+        <table class="data-table" id="bookings-table" style="display:none;">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>ผู้ใช้ ID</th>
+              <th>รถ ID</th>
+              <th>วันที่เริ่ม</th>
+              <th>วันที่สิ้นสุด</th>
+              <th>สถานะ</th>
+              <th>ยอดรวม</th>
+              <th>สร้างเมื่อ</th>
+            </tr>
+          </thead>
+          <tbody id="bookings-tbody"></tbody>
+        </table>
+        <div id="bookings-empty" class="empty-state" style="display:none;"><div class="icon">📅</div><p>ยังไม่มีข้อมูลการจอง</p></div>
+      </div>
+    </section>
+
+    <!-- ====== PAYMENTS ====== -->
+    <section id="section-payments" class="page-section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">การชำระเงิน</div>
+          <div class="section-subtitle">ประวัติการชำระเงินทั้งหมด</div>
+        </div>
+        <button class="refresh-btn" onclick="loadPayments()">🔄 รีเฟรช</button>
+      </div>
+      <div class="table-container">
+        <div id="payments-loading" style="padding:40px;text-align:center;color:#AAAAAA;font-size:13px;" class="loading-dots">กำลังโหลด</div>
+        <table class="data-table" id="payments-table" style="display:none;">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>การจอง ID</th>
+              <th>จำนวนเงิน</th>
+              <th>วิธีชำระ</th>
+              <th>สถานะ</th>
+              <th>ชำระเมื่อ</th>
+              <th>สร้างเมื่อ</th>
+            </tr>
+          </thead>
+          <tbody id="payments-tbody"></tbody>
+        </table>
+        <div id="payments-empty" class="empty-state" style="display:none;"><div class="icon">💳</div><p>ยังไม่มีข้อมูลการชำระเงิน</p></div>
+      </div>
+    </section>
+
+    <!-- ====== USERS ====== -->
+    <section id="section-users" class="page-section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">ผู้ใช้งาน</div>
+          <div class="section-subtitle">รายชื่อผู้ใช้ทั้งหมด</div>
+        </div>
+        <button class="refresh-btn" onclick="loadUsers()">🔄 รีเฟรช</button>
+      </div>
+      <div class="table-container">
+        <div id="users-loading" style="padding:40px;text-align:center;color:#AAAAAA;font-size:13px;" class="loading-dots">กำลังโหลด</div>
+        <table class="data-table" id="users-table" style="display:none;">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>ชื่อผู้ใช้</th>
+              <th>อีเมล</th>
+              <th>ชื่อเต็ม</th>
+              <th>บทบาท</th>
+              <th>สร้างเมื่อ</th>
+            </tr>
+          </thead>
+          <tbody id="users-tbody"></tbody>
+        </table>
+        <div id="users-empty" class="empty-state" style="display:none;"><div class="icon">👥</div><p>ยังไม่มีข้อมูลผู้ใช้</p></div>
+      </div>
+    </section>
+
+    <!-- ====== SIM/GPS ====== -->
+    <section id="section-sim" class="page-section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">SIM/GPS</div>
+          <div class="section-subtitle">การจัดการอุปกรณ์ติดตาม</div>
+        </div>
+      </div>
+
+      <!-- 1NCE placeholder -->
+      <div style="background:#16161E;border:1px solid #1E1E28;border-radius:16px;padding:48px;text-align:center;">
+        <div style="font-size:64px;margin-bottom:16px;">📡</div>
+        <h3 style="font-size:20px;font-weight:700;margin-bottom:8px;color:#FFFFFF;">รอการเชื่อมต่อ 1NCE</h3>
+        <p style="color:#AAAAAA;font-size:14px;margin-bottom:24px;max-width:400px;margin-left:auto;margin-right:auto;">
+          ระบบ SIM/GPS กำลังรอการผสานรวมกับ 1NCE IoT Platform<br/>
+          เพื่อติดตามตำแหน่งรถแบบ Real-time
+        </p>
+
+        <!-- Status badges -->
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:32px;">
+          <span class="badge" style="background:rgba(255,45,120,0.15);color:#FF2D78;border:1px solid rgba(255,45,120,0.3);">⏳ รอการเชื่อมต่อ</span>
+          <span class="badge" style="background:rgba(41,121,255,0.15);color:#2979FF;border:1px solid rgba(41,121,255,0.3);">🌐 1NCE IoT SIM</span>
+          <span class="badge" style="background:rgba(255,229,0,0.15);color:#FFE500;border:1px solid rgba(255,229,0,0.3);">📍 GPS Tracking</span>
+        </div>
+
+        <!-- Feature list -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;text-align:left;max-width:640px;margin:0 auto;">
+          <div style="background:#1E1E28;border-radius:10px;padding:16px;">
+            <div style="font-size:20px;margin-bottom:8px;">🗺️</div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:4px;">แผนที่ Real-time</div>
+            <div style="font-size:12px;color:#AAAAAA;">ติดตามตำแหน่งรถแบบ Live</div>
+          </div>
+          <div style="background:#1E1E28;border-radius:10px;padding:16px;">
+            <div style="font-size:20px;margin-bottom:8px;">🔔</div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:4px;">แจ้งเตือนทันที</div>
+            <div style="font-size:12px;color:#AAAAAA;">ออกนอกพื้นที่ที่กำหนด</div>
+          </div>
+          <div style="background:#1E1E28;border-radius:10px;padding:16px;">
+            <div style="font-size:20px;margin-bottom:8px;">📊</div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:4px;">รายงานการใช้งาน</div>
+            <div style="font-size:12px;color:#AAAAAA;">ระยะทาง ความเร็ว เวลา</div>
+          </div>
+          <div style="background:#1E1E28;border-radius:10px;padding:16px;">
+            <div style="font-size:20px;margin-bottom:8px;">🔋</div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:4px;">สถานะแบตเตอรี่</div>
+            <div style="font-size:12px;color:#AAAAAA;">ตรวจสอบอุปกรณ์ GPS</div>
+          </div>
+        </div>
+
+        <div style="margin-top:32px;padding:16px;background:#1E1E28;border-radius:10px;display:inline-block;">
+          <p style="font-size:12px;color:#AAAAAA;margin:0;">
+            🔗 1NCE Portal: <a href="https://portal.1nce.com" target="_blank" style="color:#2979FF;text-decoration:none;">portal.1nce.com</a>
+            &nbsp;|&nbsp;
+            📖 Docs: <a href="https://docs.1nce.com" target="_blank" style="color:#2979FF;text-decoration:none;">docs.1nce.com</a>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== AUDIT LOG ====== -->
+    <section id="section-audit" class="page-section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Audit Log</div>
+          <div class="section-subtitle">บันทึกกิจกรรมในระบบ</div>
+        </div>
+        <button class="refresh-btn" onclick="loadAuditLog()">🔄 รีเฟรช</button>
+      </div>
+      <div class="table-container">
+        <div id="audit-loading" style="padding:40px;text-align:center;color:#AAAAAA;font-size:13px;" class="loading-dots">กำลังโหลด</div>
+        <table class="data-table" id="audit-table" style="display:none;">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>บทบาท</th>
+              <th>การกระทำ</th>
+              <th>ตาราง</th>
+              <th>Record ID</th>
+              <th>เวลา</th>
+            </tr>
+          </thead>
+          <tbody id="audit-tbody"></tbody>
+        </table>
+        <div id="audit-empty" class="empty-state" style="display:none;"><div class="icon">📋</div><p>ยังไม่มีข้อมูล Audit Log</p></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- Toast notification -->
+<div id="toast" class="toast"></div>
+
+<!-- ========== SCRIPTS ========== -->
+<script>
+// ─── Supabase Init ────────────────────────────────────────────────────────────
+const SUPABASE_URL = 'https://hkkddlxhcttnejlblmsc.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhra2RkbHhoY3R0bmVqbGJsbXNjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNTkxNjksImV4cCI6MjA4OTkzNTE2OX0.3kkLr5hOHquEjR2dqAX8jGpSKZ9j6ZSZLUaXWYJdm4o';
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let currentUser = null;
+let currentUserRole = null;
+let loadedSections = new Set();
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+function showToast(msg, type = 'info') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + type + ' show';
+  setTimeout(() => { t.className = 'toast'; }, 3500);
+}
+
+function formatDate(iso) {
+  if (!iso) return '—';
+  try {
+    return new Date(iso).toLocaleString('th-TH', { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+  } catch { return iso; }
+}
+
+function formatDateShort(iso) {
+  if (!iso) return '—';
+  try {
+    return new Date(iso).toLocaleDateString('th-TH', { year:'numeric', month:'short', day:'numeric' });
+  } catch { return iso; }
+}
+
+function formatMoney(val) {
+  if (val === null || val === undefined) return '—';
+  return Number(val).toLocaleString('th-TH', { minimumFractionDigits: 0 }) + ' ฿';
+}
+
+function shortId(id) {
+  if (!id) return '—';
+  return id.toString().substring(0, 8) + '…';
+}
+
+// ─── Status / Role Badges ─────────────────────────────────────────────────────
+function statusBadge(status) {
+  if (!status) return '<span style="color:#555560">—</span>';
+  const s = status.toLowerCase();
+  let color, bg, label = status;
+  if (['available','confirmed','paid','active_paid'].includes(s)) {
+    color = '#00FFC2'; bg = 'rgba(0,255,194,0.12)';
+  } else if (['pending','pending_payment'].includes(s)) {
+    color = '#FFE500'; bg = 'rgba(255,229,0,0.12)';
+  } else if (['rented','active','ongoing'].includes(s)) {
+    color = '#2979FF'; bg = 'rgba(41,121,255,0.15)';
+  } else if (['maintenance','cancelled','failed','canceled','rejected'].includes(s)) {
+    color = '#FF453A'; bg = 'rgba(255,69,58,0.12)';
+  } else {
+    color = '#AAAAAA'; bg = 'rgba(170,170,170,0.10)';
+  }
+  return `<span class="badge" style="color:${color};background:${bg};border:1px solid ${color}33;">${label}</span>`;
+}
+
+function roleBadge(role) {
+  if (!role) return '<span style="color:#555560">—</span>';
+  let color, bg;
+  if (role === 'Super_Admin') { color = '#FF2D78'; bg = 'rgba(255,45,120,0.15)'; }
+  else if (role === 'Admin')   { color = '#2979FF'; bg = 'rgba(41,121,255,0.15)'; }
+  else if (role === 'User')    { color = '#AAAAAA'; bg = 'rgba(170,170,170,0.12)'; }
+  else                         { color = '#555560'; bg = 'rgba(85,85,96,0.20)'; }
+  return `<span class="badge" style="color:${color};background:${bg};border:1px solid ${color}33;">${role}</span>`;
+}
+
+function methodBadge(method) {
+  if (!method) return '<span style="color:#555560">—</span>';
+  const icons = { promptpay:'📱', card:'💳', cash:'💵', qr:'📲', nfc:'📶', transfer:'🏦' };
+  const icon = icons[method.toLowerCase()] || '💰';
+  return `<span style="font-size:12px;color:#AAAAAA;">${icon} ${method}</span>`;
+}
+
+function actionBadge(action) {
+  if (!action) return '—';
+  const colors = { INSERT:'#00FFC2', UPDATE:'#FFE500', DELETE:'#FF453A', SELECT:'#2979FF' };
+  const color = colors[action.toUpperCase()] || '#AAAAAA';
+  return `<span style="color:${color};font-size:12px;font-weight:600;">${action}</span>`;
+}
+
+// ─── Table Helpers ────────────────────────────────────────────────────────────
+function showTable(id) {
+  document.getElementById(id + '-loading').style.display = 'none';
+  document.getElementById(id + '-table').style.display = 'table';
+  document.getElementById(id + '-empty').style.display = 'none';
+}
+function showEmpty(id) {
+  document.getElementById(id + '-loading').style.display = 'none';
+  document.getElementById(id + '-table').style.display = 'none';
+  document.getElementById(id + '-empty').style.display = 'block';
+}
+function showLoading(id) {
+  document.getElementById(id + '-loading').style.display = 'block';
+  document.getElementById(id + '-table').style.display = 'none';
+  document.getElementById(id + '-empty').style.display = 'none';
+}
+
+// ─── AUTH ─────────────────────────────────────────────────────────────────────
+async function handleLogin(e) {
+  e.preventDefault();
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const btn = document.getElementById('login-btn');
+  const errDiv = document.getElementById('login-error');
+
+  btn.disabled = true;
+  btn.textContent = 'กำลังเข้าสู่ระบบ…';
+  errDiv.style.display = 'none';
+
+  try {
+    const { data, error } = await sb.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+
+    currentUser = data.user;
+    await checkRoleAndShow();
+  } catch (err) {
+    errDiv.textContent = err.message || 'เข้าสู่ระบบไม่สำเร็จ';
+    errDiv.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'เข้าสู่ระบบ';
+  }
+}
+
+async function checkRoleAndShow() {
+  try {
+    // Try profiles table first
+    const { data: profile, error } = await sb
+      .from('profiles')
+      .select('role, username, full_name')
+      .eq('id', currentUser.id)
+      .single();
+
+    const role = profile?.role || 'User';
+    currentUserRole = role;
+
+    if (!['Super_Admin', 'Admin'].includes(role)) {
+      document.getElementById('login-screen').style.display = 'none';
+      const ua = document.getElementById('unauthorized-screen');
+      ua.style.display = 'flex';
+      return;
+    }
+
+    // Show dashboard
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'flex';
+    document.getElementById('sidebar-user-email').textContent = currentUser.email || '—';
+    document.getElementById('sidebar-user-role').textContent = role;
+
+    loadOverview();
+  } catch (err) {
+    console.error('checkRoleAndShow error:', err);
+    // If profiles table doesn't exist, allow admin access for debugging
+    showToast('ไม่สามารถดึงข้อมูล role ได้: ' + err.message, 'error');
+  }
+}
+
+async function handleLogout() {
+  await sb.auth.signOut();
+  currentUser = null;
+  currentUserRole = null;
+  loadedSections.clear();
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('unauthorized-screen').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+}
+
+// Check existing session on load
+window.addEventListener('DOMContentLoaded', async () => {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session?.user) {
+    currentUser = session.user;
+    await checkRoleAndShow();
+  }
+
+  // Update date
+  const now = new Date();
+  const dateEl = document.getElementById('overview-date');
+  if (dateEl) {
+    dateEl.textContent = now.toLocaleDateString('th-TH', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  }
+
+  // Mobile menu
+  const mql = window.matchMedia('(max-width: 768px)');
+  document.getElementById('mobile-menu-btn').style.display = mql.matches ? 'block' : 'none';
+  mql.addEventListener('change', e => {
+    document.getElementById('mobile-menu-btn').style.display = e.matches ? 'block' : 'none';
+  });
+});
+
+// ─── Navigation ───────────────────────────────────────────────────────────────
+function showSection(name) {
+  document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+
+  document.getElementById('section-' + name).classList.add('active');
+  document.querySelector(`[data-section="${name}"]`).classList.add('active');
+
+  // Close mobile sidebar
+  document.getElementById('sidebar').classList.remove('open');
+
+  // Lazy load
+  if (!loadedSections.has(name)) {
+    loadedSections.add(name);
+    const loaders = {
+      cars: loadCars,
+      bookings: loadBookings,
+      payments: loadPayments,
+      users: loadUsers,
+      audit: loadAuditLog,
+    };
+    if (loaders[name]) loaders[name]();
+  }
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+// ─── Data Loaders ─────────────────────────────────────────────────────────────
+
+// OVERVIEW
+async function loadOverview() {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    const firstOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
+
+    const [carsRes, bookingsRes, paymentsRes, usersRes, todayBookingsRes, pendingRes] = await Promise.allSettled([
+      sb.from('cars').select('status', { count: 'exact' }),
+      sb.from('bookings').select('status', { count: 'exact' }),
+      sb.from('payments').select('amount, paid_at').gte('paid_at', firstOfMonth).eq('status', 'paid'),
+      sb.from('profiles').select('id', { count: 'exact' }),
+      sb.from('bookings').select('id', { count: 'exact' }).gte('created_at', today),
+      sb.from('bookings').select('id', { count: 'exact' }).eq('status', 'pending'),
+    ]);
+
+    // Cars stats
+    if (carsRes.status === 'fulfilled' && !carsRes.value.error) {
+      const cars = carsRes.value.data || [];
+      document.getElementById('stat-total-cars').textContent = carsRes.value.count || cars.length;
+      document.getElementById('stat-available-cars').textContent = cars.filter(c => c.status === 'available').length;
+      document.getElementById('stat-rented-cars').textContent = cars.filter(c => ['rented','active'].includes(c.status)).length;
+      document.getElementById('stat-maintenance-cars').textContent = cars.filter(c => c.status === 'maintenance').length;
+    } else {
+      ['stat-total-cars','stat-available-cars','stat-rented-cars','stat-maintenance-cars'].forEach(id => document.getElementById(id).textContent = 'N/A');
+    }
+
+    // Today bookings
+    if (todayBookingsRes.status === 'fulfilled' && !todayBookingsRes.value.error) {
+      document.getElementById('stat-today-bookings').textContent = todayBookingsRes.value.count ?? '0';
+    } else {
+      document.getElementById('stat-today-bookings').textContent = 'N/A';
+    }
+
+    // Monthly revenue
+    if (paymentsRes.status === 'fulfilled' && !paymentsRes.value.error) {
+      const total = (paymentsRes.value.data || []).reduce((s, p) => s + (parseFloat(p.amount) || 0), 0);
+      document.getElementById('stat-monthly-revenue').textContent = total.toLocaleString('th-TH');
+    } else {
+      document.getElementById('stat-monthly-revenue').textContent = 'N/A';
+    }
+
+    // SIM online placeholder
+    document.getElementById('stat-sim-online').textContent = '—';
+
+    // Users
+    if (usersRes.status === 'fulfilled' && !usersRes.value.error) {
+      document.getElementById('stat-total-users').textContent = usersRes.value.count ?? '0';
+    } else {
+      document.getElementById('stat-total-users').textContent = 'N/A';
+    }
+
+    // Pending bookings
+    if (pendingRes.status === 'fulfilled' && !pendingRes.value.error) {
+      document.getElementById('stat-pending-bookings').textContent = pendingRes.value.count ?? '0';
+    } else {
+      document.getElementById('stat-pending-bookings').textContent = 'N/A';
+    }
+
+    // Today payments
+    const todayPaymentsRes = await sb.from('payments').select('id', { count: 'exact' }).gte('created_at', today);
+    if (!todayPaymentsRes.error) {
+      document.getElementById('stat-today-payments').textContent = todayPaymentsRes.count ?? '0';
+    } else {
+      document.getElementById('stat-today-payments').textContent = 'N/A';
+    }
+
+    // Recent bookings table
+    const { data: recentBookings, error: rbErr } = await sb
+      .from('bookings')
+      .select('id, user_id, car_id, start_date, end_date, status, total_amount, created_at')
+      .order('created_at', { ascending: false })
+      .limit(10);
+
+    const tbody = document.getElementById('overview-recent-tbody');
+    const loadingEl = document.getElementById('overview-recent-loading');
+    const tableEl = document.getElementById('overview-recent-table');
+    const emptyEl = document.getElementById('overview-recent-empty');
+
+    loadingEl.style.display = 'none';
+
+    if (rbErr || !recentBookings || recentBookings.length === 0) {
+      tableEl.style.display = 'none';
+      emptyEl.style.display = 'block';
+    } else {
+      tbody.innerHTML = recentBookings.map((b, i) => `
+        <tr>
+          <td style="color:#555560;font-size:11px;">${i+1}</td>
+          <td><span style="font-size:11px;color:#AAAAAA;font-family:monospace;">${shortId(b.id)}</span></td>
+          <td><span style="font-size:11px;color:#AAAAAA;font-family:monospace;">${shortId(b.car_id)}</span></td>
+          <td style="color:#AAAAAA;">${formatDateShort(b.start_date)}</td>
+          <td style="color:#AAAAAA;">${formatDateShort(b.end_date)}</td>
+          <td>${statusBadge(b.status)}</td>
+          <td style="color:#00FFC2;font-weight:600;">${formatMoney(b.total_amount)}</td>
+        </tr>
+      `).join('');
+      tableEl.style.display = 'table';
+    }
+
+  } catch (err) {
+    console.error('loadOverview error:', err);
+    showToast('โหลดภาพรวมไม่สำเร็จ: ' + err.message, 'error');
+  }
+}
+
+// CARS
+async function loadCars() {
+  showLoading('cars');
+  try {
+    const { data, error } = await sb
+      .from('cars')
+      .select('id, brand, model, plate, status, daily_rate, color, year')
+      .order('created_at', { ascending: false })
+      .limit(200);
+
+    if (error) throw error;
+    if (!data || data.length === 0) { showEmpty('cars'); return; }
+
+    document.getElementById('cars-tbody').innerHTML = data.map((c, i) => `
+      <tr>
+        <td style="color:#555560;">${i+1}</td>
+        <td style="font-weight:600;">${c.brand || '—'}</td>
+        <td>${c.model || '—'}</td>
+        <td><span style="font-family:monospace;background:#1E1E28;padding:3px 8px;border-radius:6px;font-size:12px;">${c.plate || '—'}</span></td>
+        <td>${statusBadge(c.status)}</td>
+        <td style="color:#00FFC2;font-weight:600;">${c.daily_rate ? formatMoney(c.daily_rate) : '—'}</td>
+        <td style="color:#AAAAAA;">${c.color || '—'}</td>
+        <td style="color:#AAAAAA;">${c.year || '—'}</td>
+      </tr>
+    `).join('');
+    showTable('cars');
+  } catch (err) {
+    showEmpty('cars');
+    showToast('โหลดรถไม่สำเร็จ: ' + err.message, 'error');
+  }
+}
+
+// BOOKINGS
+async function loadBookings() {
+  showLoading('bookings');
+  try {
+    const { data, error } = await sb
+      .from('bookings')
+      .select('id, user_id, car_id, start_date, end_date, status, total_amount, created_at')
+      .order('created_at', { ascending: false })
+      .limit(200);
+
+    if (error) throw error;
+    if (!data || data.length === 0) { showEmpty('bookings'); return; }
+
+    document.getElementById('bookings-tbody').innerHTML = data.map((b, i) => `
+      <tr>
+        <td style="color:#555560;">${i+1}</td>
+        <td><span style="font-size:11px;color:#AAAAAA;font-family:monospace;">${shortId(b.user_id)}</span></td>
+        <td><span style="font-size:11px;color:#AAAAAA;font-family:monospace;">${shortId(b.car_id)}</span></td>
+        <td style="color:#AAAAAA;">${formatDateShort(b.start_date)}</td>
+        <td style="color:#AAAAAA;">${formatDateShort(b.end_date)}</td>
+        <td>${statusBadge(b.status)}</td>
+        <td style="color:#00FFC2;font-weight:600;">${formatMoney(b.total_amount)}</td>
+        <td style="color:#555560;font-size:11px;">${formatDate(b.created_at)}</td>
+      </tr>
+    `).join('');
+    showTable('bookings');
+  } catch (err) {
+    showEmpty('bookings');
+    showToast('โหลดการจองไม่สำเร็จ: ' + err.message, 'error');
+  }
+}
+
+// PAYMENTS
+async function loadPayments() {
+  showLoading('payments');
+  try {
+    const { data, error } = await sb
+      .from('payments')
+      .select('id, booking_id, amount, method, status, paid_at, created_at')
+      .order('created_at', { ascending: false })
+      .limit(200);
+
+    if (error) throw error;
+    if (!data || data.length === 0) { showEmpty('payments'); return; }
+
+    document.getElementById('payments-tbody').innerHTML = data.map((p, i) => `
+      <tr>
+        <td style="color:#555560;">${i+1}</td>
+        <td><span style="font-size:11px;color:#AAAAAA;font-family:monospace;">${shortId(p.booking_id)}</span></td>
+        <td style="color:#00FFC2;font-weight:600;">${formatMoney(p.amount)}</td>
+        <td>${methodBadge(p.method)}</td>
+        <td>${statusBadge(p.status)}</td>
+        <td style="color:#AAAAAA;">${formatDate(p.paid_at)}</td>
+        <td style="color:#555560;font-size:11px;">${formatDate(p.created_at)}</td>
+      </tr>
+    `).join('');
+    showTable('payments');
+  } catch (err) {
+    showEmpty('payments');
+    showToast('โหลดการชำระเงินไม่สำเร็จ: ' + err.message, 'error');
+  }
+}
+
+// USERS
+async function loadUsers() {
+  showLoading('users');
+  try {
+    const { data, error } = await sb
+      .from('profiles')
+      .select('id, username, email, full_name, role, created_at')
+      .order('created_at', { ascending: false })
+      .limit(200);
+
+    if (error) throw error;
+    if (!data || data.length === 0) { showEmpty('users'); return; }
+
+    document.getElementById('users-tbody').innerHTML = data.map((u, i) => `
+      <tr>
+        <td style="color:#555560;">${i+1}</td>
+        <td style="font-weight:600;">${u.username || '—'}</td>
+        <td style="color:#AAAAAA;">${u.email || '—'}</td>
+        <td style="color:#AAAAAA;">${u.full_name || '—'}</td>
+        <td>${roleBadge(u.role)}</td>
+        <td style="color:#555560;font-size:11px;">${formatDate(u.created_at)}</td>
+      </tr>
+    `).join('');
+    showTable('users');
+  } catch (err) {
+    showEmpty('users');
+    showToast('โหลดผู้ใช้ไม่สำเร็จ: ' + err.message, 'error');
+  }
+}
+
+// AUDIT LOG
+async function loadAuditLog() {
+  showLoading('audit');
+  try {
+    const { data, error } = await sb
+      .from('audit_log')
+      .select('id, actor_role, action, table_name, record_id, created_at')
+      .order('created_at', { ascending: false })
+      .limit(300);
+
+    if (error) throw error;
+    if (!data || data.length === 0) { showEmpty('audit'); return; }
+
+    document.getElementById('audit-tbody').innerHTML = data.map((a, i) => `
+      <tr>
+        <td style="color:#555560;">${i+1}</td>
+        <td>${roleBadge(a.actor_role)}</td>
+        <td>${actionBadge(a.action)}</td>
+        <td><span style="font-family:monospace;font-size:12px;color:#2979FF;">${a.table_name || '—'}</span></td>
+        <td><span style="font-size:11px;color:#555560;font-family:monospace;">${shortId(a.record_id)}</span></td>
+        <td style="color:#555560;font-size:11px;">${formatDate(a.created_at)}</td>
+      </tr>
+    `).join('');
+    showTable('audit');
+  } catch (err) {
+    showEmpty('audit');
+    showToast('โหลด Audit Log ไม่สำเร็จ: ' + err.message, 'error');
+  }
+}
+</script>
+</body>
+</html>
