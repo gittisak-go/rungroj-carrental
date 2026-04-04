@@ -5,9 +5,10 @@ import '../theme/app_colors.dart';
 
 // ─────────────────────────────────────────────────────────────────
 // nfc_scan_screen.dart
-// ใช้: flutter_nfc_kit ^3.0.0
-// pubspec: flutter_nfc_kit: ^3.0.0
+// ใช้: flutter_nfc_kit ^3.3.1
+// pubspec: flutter_nfc_kit: ^3.3.1
 // AndroidManifest: <uses-permission android:name="android.permission.NFC"/>
+// MethodChannel: nfc.gtsalphamcp.com (Hostinger subdomain)
 // ─────────────────────────────────────────────────────────────────
 
 class NfcScanScreen extends StatefulWidget {
@@ -21,7 +22,7 @@ class NfcScanScreen extends StatefulWidget {
 
 class _NfcScanScreenState extends State<NfcScanScreen>
     with TickerProviderStateMixin {
-  static const _nfc = MethodChannel('com.driveflow.rentalr/nfc');
+  static const _nfc = MethodChannel('nfc.gtsalphamcp.com');
 
   _ScanState _state = _ScanState.idle;
   String _message = 'พร้อมสแกน';

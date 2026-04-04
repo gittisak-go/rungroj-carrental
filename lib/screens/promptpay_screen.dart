@@ -6,7 +6,7 @@ import '../theme/app_colors.dart';
 // promptpay_screen.dart
 // ใช้: qr_flutter ^4.1.0
 // pubspec: qr_flutter: ^4.1.0
-// PromptPay เลขนิติบุคคล GTSALPHA MCP: 0445569000441
+// PromptPay เบอร์มือถือ รุ่งโรจน์คาร์เร้นท์: 0963638519
 // ─────────────────────────────────────────────────────────────────
 
 class PromptPayScreen extends StatefulWidget {
@@ -23,11 +23,11 @@ class _PromptPayScreenState extends State<PromptPayScreen> {
 
   // ── EMVCo PromptPay payload builder ──────────────────────────
   static String _buildPayload(double amount) {
-    const ppId = '0445569000441'; // เลขนิติบุคคล GTSALPHA MCP
+    const ppId = '0066963638519'; // เบอร์มือถือ รุ่งโรจน์คาร์เร้นท์ (0963638519 → 0066...)
     final amt = amount.toStringAsFixed(2);
 
     final merchantAccount = '0016A000000677010111' // PromptPay GUID
-        '0213$ppId';                               // corporate ID (13 digits)
+        '0113$ppId';                               // mobile number (13 digits)
 
     String raw = ''
         '000201'                                   // Payload Format Indicator

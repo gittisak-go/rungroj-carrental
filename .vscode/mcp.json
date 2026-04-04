@@ -1,0 +1,48 @@
+{
+  "servers": {
+    "gittisakwannakeeree": {
+      "type": "stdio",
+      "command": "C:\\Users\\usEr\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+      "args": [
+        "C:\\Users\\usEr\\phuphadang_mcp_router\\mcp_server.py"
+      ],
+      "env": {
+        "OLLAMA_BASE_URL": "http://localhost:11434",
+        "OLLAMA_MODEL": "gemma3:4b"
+      }
+    },
+    "flutter-gittisakwannakeeree": {
+      "type": "stdio",
+      "command": "C:\\Users\\usEr\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+      "args": [
+        "C:\\Users\\usEr\\phuphadang_mcp_router\\mcp_server.py"
+      ],
+      "env": {
+        "OLLAMA_BASE_URL": "http://localhost:11434",
+        "OLLAMA_MODEL": "gemma3:4b"
+      }
+    },
+    "rental-gittisakwannakeeree": {
+      "type": "stdio",
+      "command": "C:\\Users\\usEr\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+      "args": [
+        "C:\\Users\\usEr\\phuphadang_mcp_router\\mcp_server.py"
+      ],
+      "env": {
+        "OLLAMA_BASE_URL": "http://localhost:11434",
+        "OLLAMA_MODEL": "gemma3:4b"
+      }
+    },
+    "ai-gittisakwannakeeree": {
+      "type": "stdio",
+      "command": "C:\\Users\\usEr\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+      "args": [
+        "C:\\Users\\usEr\\phuphadang_mcp_router\\mcp_server.py"
+      ],
+      "env": {
+        "OLLAMA_BASE_URL": "http://localhost:11434",
+        "OLLAMA_MODEL": "gemma3:4b"
+      }
+    }
+  }
+}
