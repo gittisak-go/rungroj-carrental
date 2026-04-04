@@ -1,4 +1,11 @@
 {
+  "inputs": [
+    {
+      "id": "api_token",
+      "type": "promptString",
+      "description": "Enter your Hostinger API token (required)"
+    }
+  ],
   "servers": {
     "gittisakwannakeeree": {
       "type": "stdio",
@@ -42,6 +49,50 @@
       "env": {
         "OLLAMA_BASE_URL": "http://localhost:11434",
         "OLLAMA_MODEL": "gemma3:4b"
+      }
+    },
+    "hostinger-rungroj": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "hostinger-api-mcp@latest"
+      ],
+      "env": {
+        "API_TOKEN": "${input:api_token}",
+        "DOMAIN": "rungroj.gtsalphamcp.com"
+      }
+    },
+    "hostinger-gcarud": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "hostinger-api-mcp@latest"
+      ],
+      "env": {
+        "API_TOKEN": "${input:api_token}",
+        "DOMAIN": "gcarud.gtsalphamcp.com"
+      }
+    },
+    "hostinger-gdrive": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "hostinger-api-mcp@latest"
+      ],
+      "env": {
+        "API_TOKEN": "${input:api_token}",
+        "DOMAIN": "gdrive.gtsalphamcp.com"
+      }
+    },
+    "hostinger-gdrivekk": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "hostinger-api-mcp@latest"
+      ],
+      "env": {
+        "API_TOKEN": "${input:api_token}",
+        "DOMAIN": "gdrivekk.gtsalphamcp.com"
       }
     }
   }
