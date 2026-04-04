@@ -1,6 +1,12 @@
 @echo off
-set SUPABASE_URL=https://hkkddlxhcttnejlblmsc.supabase.co
-set SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhra2RkbHhoY3R0bmVqbGJsbXNjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNTkxNjksImV4cCI6MjA4OTkzNTE2OX0.3kkLr5hOHquEjR2dqAX8jGpSKZ9j6ZSZLUaXWYJdm4o
+if "%SUPABASE_URL%"=="" (
+  echo ERROR: SUPABASE_URL is not set. Run: set SUPABASE_URL=...
+  exit /b 1
+)
+if "%SUPABASE_ANON_KEY%"=="" (
+  echo ERROR: SUPABASE_ANON_KEY is not set. Run: set SUPABASE_ANON_KEY=...
+  exit /b 1
+)
 
 flutter run ^
   --dart-define=SUPABASE_URL=%SUPABASE_URL% ^
