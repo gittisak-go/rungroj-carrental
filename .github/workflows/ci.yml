@@ -10,41 +10,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v1
+      - uses: supabase/setup-cli@v1
         with:
           version: latest
-
-      - name: Check migration files
-        run: |
-          supabase db lint --schema public
+      - name: Check migration files exist
+        run: ls supabase/migrations/*.sql
+      - name: Lint SQL
+        run: supabase db lint --schema public
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-
-      - name: Validate SQL syntax
-        run: |
-          for f in supabase/migrations/*.sql; do
-            echo "Checking $f"
-            psql --no-psqlrc -c "\i $f" postgresql://postgres:postgres@localhost:5432/postgres 2>&1 || true
-          done
 
   flutter-analyze:
     name: Flutter Analyze
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.38.9'
           channel: stable
-
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Analyze
-        run: flutter analyze
-
-      - name: Run tests
-        run: flutter test
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test
