@@ -50,3 +50,6 @@ app.*.map.json
 env.json
 *.env
 .env*
+
+# Large files
+cmdline-tools.zip
